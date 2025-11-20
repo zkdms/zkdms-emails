@@ -1,12 +1,16 @@
 {
   "compilerOptions": {
-    "composite": false,
+    "lib": ["ES2022"],
+    "module": "ESNext",
+    "noEmit": true,
+    "strict": true,
     "jsx": "react-jsx",
     "skipLibCheck": true,
-    "strict": true,
-    "noEmit": true,
-    "strictNullChecks": true
+    "isolatedModules": true,
+    "resolveJsonModule": true,
+    "moduleResolution": "bundler",
+    "useDefineForClassFields": true,
+    "allowImportingTsExtensions": true
   },
-  "include": ["**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules", ".react-email"]
+  "include": ["src"]
 }

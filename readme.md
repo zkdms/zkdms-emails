@@ -1,27 +1,23 @@
-# React Email Starter
+# Rslib project
 
-A live preview right in your browser so you don't need to keep sending real emails during development.
+## Setup
 
-## Getting Started
+Install the dependencies:
 
-First, install the dependencies:
-
-```sh
-npm install
-# or
-yarn
+```bash
+pnpm install
 ```
 
-Then, run the development server:
+## Get started
 
-```sh
-npm run dev
-# or
-yarn dev
+Build the library:
+
+```bash
+pnpm build
 ```
 
-Open [localhost:3000](http://localhost:3000) with your browser to see the result.
+Build the library in watch mode:
 
-## License
-
-MIT License
+```bash
+pnpm dev
+```
