@@ -4,7 +4,7 @@
     "module": "ESNext",
     "noEmit": true,
     "strict": true,
-    "jsx": "react-jsx",
+    "jsx": "preserve",
     "skipLibCheck": true,
     "isolatedModules": true,
     "resolveJsonModule": true,
@@ -12,5 +12,5 @@
     "useDefineForClassFields": true,
     "allowImportingTsExtensions": true
   },
-  "include": ["src"]
+  "include": ["lib"]
 }
