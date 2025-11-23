@@ -1,5 +1,4 @@
-import { defineConfig } from "@lingui/cli";
-export const config = {
+export default {
   sourceLocale: "en",
   locales: ["fr", "en"],
   catalogs: [
@@ -9,5 +8,3 @@ export const config = {
     },
   ],
 } as const;
-// @ts-expect-error Config satisfies but type not exported
-export default defineConfig(config);

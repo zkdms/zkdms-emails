@@ -10,15 +10,7 @@ import { nodePolyfills } from "vite-plugin-node-polyfills";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
-  plugins: [
-    react({
-      babel: {
-        plugins: ["@lingui/babel-plugin-lingui-macro"],
-      },
-    }),
-    lingui(),
-    nodePolyfills(),
-  ],
+  plugins: [react(), lingui(), nodePolyfills()],
   build: {
     ssr: true,
     outDir: "emails",
