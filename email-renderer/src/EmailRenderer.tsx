@@ -6,6 +6,11 @@ import { toPlainText, render } from "@react-email/render";
 import { Providers } from "./Providers";
 import { useEmailComponents, type EmailMetadata } from "./useEmailComponents";
 import { EmailPreviewIframe } from "./EmailPreviewIframe";
+import {
+  ResizablePanelGroup,
+  ResizablePanel,
+  ResizableHandle,
+} from "@/components/ui/resizable";
 
 type ViewTab = "preview" | "html" | "text";
 
@@ -148,200 +153,217 @@ const EmailRenderer: React.FC = () => {
   }
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <ResizablePanelGroup direction="horizontal" className="h-screen bg-gray-50">
       {/* Left Panel - Email Navigation */}
-      <div className="w-80 bg-white border-r border-gray-200 flex flex-col">
-        {/* Header */}
-        <div className="p-4 border-b border-gray-200">
-          <div className="flex items-center justify-between mb-2">
-            <h2 className="text-lg font-semibold text-gray-800">
-              Email Templates
-            </h2>
-            <button
-              onClick={handleRefresh}
-              disabled={isLoading}
-              className="text-sm bg-blue-500 text-white px-3 py-1.5 rounded hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              title="Refresh all emails"
-            >
-              {isLoading ? "Loading..." : "Refresh"}
-            </button>
-          </div>
-          <p className="text-sm text-gray-500">
-            {emails.length} template{emails.length !== 1 ? "s" : ""} available
-          </p>
-        </div>
-
-        {/* Email List */}
-        <div className="flex-1 overflow-y-auto">
-          {Object.entries(groupedEmails).length === 0 ? (
-            <div className="p-4 text-center text-gray-500">
-              No email templates found
+      <ResizablePanel
+        defaultSize={25}
+        minSize={20}
+        className="bg-white border-r border-gray-200"
+      >
+        <div className="flex flex-col h-full">
+          {/* Header */}
+          <div className="p-4 border-b border-gray-200 flex-shrink-0">
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-lg font-semibold text-gray-800">
+                Email Templates
+              </h2>
+              <button
+                onClick={handleRefresh}
+                disabled={isLoading}
+                className="text-sm bg-blue-500 text-white px-3 py-1.5 rounded hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                title="Refresh all emails"
+              >
+                {isLoading ? "Loading..." : "Refresh"}
+              </button>
             </div>
-          ) : (
-            Object.entries(groupedEmails).map(([category, categoryEmails]) => (
-              <div key={category} className="py-2">
-                <h3 className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                  {category}
-                </h3>
-                {categoryEmails.map((email) => (
+            <p className="text-sm text-gray-500">
+              {emails.length} template{emails.length !== 1 ? "s" : ""} available
+            </p>
+          </div>
+
+          {/* Email List */}
+          <div className="flex-1 overflow-y-auto">
+            {Object.entries(groupedEmails).length === 0 ? (
+              <div className="p-4 text-center text-gray-500">
+                No email templates found
+              </div>
+            ) : (
+              Object.entries(groupedEmails).map(
+                ([category, categoryEmails]) => (
+                  <div key={category} className="py-2">
+                    <h3 className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                      {category}
+                    </h3>
+                    {categoryEmails.map((email) => (
+                      <button
+                        key={email.id}
+                        onClick={() => handleEmailSelect(email.id)}
+                        className={`w-full text-left px-4 py-3 text-sm transition-colors ${
+                          selectedEmailId === email.id
+                            ? "bg-blue-50 text-blue-700 border-r-2 border-blue-500"
+                            : "text-gray-700 hover:bg-gray-50"
+                        }`}
+                      >
+                        <div className="font-medium">{email.name}</div>
+                        <div className="text-xs text-gray-500 mt-1">
+                          {email.id}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                ),
+              )
+            )}
+          </div>
+        </div>
+      </ResizablePanel>
+
+      <ResizableHandle
+        withHandle
+        className="bg-gray-200 hover:bg-gray-300 transition-colors"
+      />
+
+      {/* Main Content Area */}
+      <ResizablePanel defaultSize={75} minSize={15}>
+        <div className="flex flex-col h-full">
+          {/* Top Bar */}
+          <div className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between flex-shrink-0">
+            <div>
+              <h1 className="text-xl font-semibold text-gray-800">
+                {selectedEmail?.name || "Select an Email"}
+              </h1>
+              {selectedEmailId && (
+                <p className="text-sm text-gray-600 mt-1">
+                  Locale: {currentLanguage}
+                  {isRendering && (
+                    <span className="ml-2 text-blue-500">Rendering...</span>
+                  )}
+                </p>
+              )}
+            </div>
+
+            <div className="flex items-center space-x-4">
+              {/* View Tabs */}
+              <div className="flex bg-gray-100 rounded-lg p-1">
+                {(["preview", "html", "text"] as ViewTab[]).map((tab) => (
                   <button
-                    key={email.id}
-                    onClick={() => handleEmailSelect(email.id)}
-                    className={`w-full text-left px-4 py-3 text-sm transition-colors ${
-                      selectedEmailId === email.id
-                        ? "bg-blue-50 text-blue-700 border-r-2 border-blue-500"
-                        : "text-gray-700 hover:bg-gray-50"
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={`px-3 py-1 text-sm font-medium rounded-md transition-colors capitalize ${
+                      activeTab === tab
+                        ? "bg-white text-gray-800 shadow-sm"
+                        : "text-gray-600 hover:text-gray-800"
                     }`}
                   >
-                    <div className="font-medium">{email.name}</div>
-                    <div className="text-xs text-gray-500 mt-1">{email.id}</div>
+                    {tab}
                   </button>
                 ))}
               </div>
-            ))
-          )}
-        </div>
-      </div>
 
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col">
-        {/* Top Bar - Moved outside of the conditional rendering */}
-        <div className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-          <div>
-            <h1 className="text-xl font-semibold text-gray-800">
-              {selectedEmail?.name || "Select an Email"}
-            </h1>
-            {selectedEmailId && (
-              <p className="text-sm text-gray-600 mt-1">
-                Locale: {currentLanguage}
-                {isRendering && (
-                  <span className="ml-2 text-blue-500">Rendering...</span>
-                )}
-              </p>
-            )}
-          </div>
-
-          <div className="flex items-center space-x-4">
-            {/* View Tabs */}
-            <div className="flex bg-gray-100 rounded-lg p-1">
-              {(["preview", "html", "text"] as ViewTab[]).map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`px-3 py-1 text-sm font-medium rounded-md transition-colors capitalize ${
-                    activeTab === tab
-                      ? "bg-white text-gray-800 shadow-sm"
-                      : "text-gray-600 hover:text-gray-800"
-                  }`}
-                >
-                  {tab}
-                </button>
-              ))}
-            </div>
-
-            {/* Language Switcher */}
-            <div className="flex items-center space-x-2">
-              <span className="text-sm text-gray-600">Language:</span>
-              <select
-                value={currentLanguage}
-                onChange={(e) => handleLanguageChange(e.target.value)}
-                className="border border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              >
-                {LANGUAGES.map((language) => (
-                  <option key={language.code} value={language.code}>
-                    {language.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* HMR Status Indicator */}
-            {process.env.NODE_ENV === "development" && (
+              {/* Language Switcher */}
               <div className="flex items-center space-x-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="text-xs text-gray-500">HMR Active</span>
+                <span className="text-sm text-gray-600">Language:</span>
+                <select
+                  value={currentLanguage}
+                  onChange={(e) => handleLanguageChange(e.target.value)}
+                  className="border border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  {LANGUAGES.map((language) => (
+                    <option key={language.code} value={language.code}>
+                      {language.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* HMR Status Indicator */}
+              {process.env.NODE_ENV === "development" && (
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                  <span className="text-xs text-gray-500">HMR Active</span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Main Content Panel */}
+          <div className="flex-1 p-6 overflow-auto">
+            {selectedEmailId ? (
+              <div className="h-full flex flex-col">
+                {/* Preview Tab */}
+                {activeTab === "preview" && (
+                  <div className="flex-1 bg-white rounded-lg shadow-sm border border-gray-200 overflow-auto">
+                    <EmailPreviewIframe
+                      key={`${selectedEmailId}-${currentLanguage}`}
+                      html={renderedEmail.html}
+                    />
+                  </div>
+                )}
+
+                {/* HTML Tab */}
+                {activeTab === "html" && (
+                  <div className="flex-1 bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden flex flex-col">
+                    <div className="p-4 border-b border-gray-200 flex items-center justify-between">
+                      <h3 className="text-lg font-medium text-gray-800">
+                        HTML Source
+                      </h3>
+                      <button
+                        onClick={() =>
+                          navigator.clipboard.writeText(renderedEmail.html)
+                        }
+                        className="text-sm bg-gray-100 text-gray-700 px-3 py-1 rounded hover:bg-gray-200 transition-colors"
+                      >
+                        Copy
+                      </button>
+                    </div>
+                    <div className="flex-1 overflow-auto">
+                      <pre className="bg-gray-900 text-gray-100 text-xs p-4 h-full overflow-x-auto">
+                        <code>{renderedEmail.html}</code>
+                      </pre>
+                    </div>
+                  </div>
+                )}
+
+                {/* Text Tab */}
+                {activeTab === "text" && (
+                  <div className="flex-1 bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden flex flex-col">
+                    <div className="p-4 border-b border-gray-200 flex items-center justify-between">
+                      <h3 className="text-lg font-medium text-gray-800">
+                        Plain Text Version
+                      </h3>
+                      <button
+                        onClick={() =>
+                          navigator.clipboard.writeText(renderedEmail.text)
+                        }
+                        className="text-sm bg-gray-100 text-gray-700 px-3 py-1 rounded hover:bg-gray-200 transition-colors"
+                      >
+                        Copy
+                      </button>
+                    </div>
+                    <div className="flex-1 overflow-auto">
+                      <pre className="bg-gray-100 text-gray-800 text-sm p-4 h-full whitespace-pre-wrap">
+                        {renderedEmail.text}
+                      </pre>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="flex items-center justify-center h-full bg-white rounded-lg border border-gray-200">
+                <div className="text-center">
+                  <div className="text-gray-400 text-lg mb-2">
+                    No email selected
+                  </div>
+                  <div className="text-gray-500 text-sm">
+                    Choose an email template from the left panel to preview
+                  </div>
+                </div>
               </div>
             )}
           </div>
         </div>
-
-        {/* Main Content Panel */}
-        <div className="flex-1 p-6 overflow-auto">
-          {selectedEmailId ? (
-            <div className="h-full flex flex-col">
-              {/* Preview Tab - Fixed overflow */}
-              {activeTab === "preview" && (
-                <div className="flex-1 bg-white rounded-lg shadow-sm border border-gray-200 overflow-auto">
-                  <EmailPreviewIframe
-                    key={`${selectedEmailId}-${currentLanguage}`}
-                    html={renderedEmail.html}
-                  />
-                </div>
-              )}
-
-              {/* HTML Tab */}
-              {activeTab === "html" && (
-                <div className="flex-1 bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden flex flex-col">
-                  <div className="p-4 border-b border-gray-200 flex items-center justify-between">
-                    <h3 className="text-lg font-medium text-gray-800">
-                      HTML Source
-                    </h3>
-                    <button
-                      onClick={() =>
-                        navigator.clipboard.writeText(renderedEmail.html)
-                      }
-                      className="text-sm bg-gray-100 text-gray-700 px-3 py-1 rounded hover:bg-gray-200 transition-colors"
-                    >
-                      Copy
-                    </button>
-                  </div>
-                  <div className="flex-1 overflow-auto">
-                    <pre className="bg-gray-900 text-gray-100 text-xs p-4 h-full overflow-x-auto">
-                      <code>{renderedEmail.html}</code>
-                    </pre>
-                  </div>
-                </div>
-              )}
-
-              {/* Text Tab */}
-              {activeTab === "text" && (
-                <div className="flex-1 bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden flex flex-col">
-                  <div className="p-4 border-b border-gray-200 flex items-center justify-between">
-                    <h3 className="text-lg font-medium text-gray-800">
-                      Plain Text Version
-                    </h3>
-                    <button
-                      onClick={() =>
-                        navigator.clipboard.writeText(renderedEmail.text)
-                      }
-                      className="text-sm bg-gray-100 text-gray-700 px-3 py-1 rounded hover:bg-gray-200 transition-colors"
-                    >
-                      Copy
-                    </button>
-                  </div>
-                  <div className="flex-1 overflow-auto">
-                    <pre className="bg-gray-100 text-gray-800 text-sm p-4 h-full whitespace-pre-wrap">
-                      {renderedEmail.text}
-                    </pre>
-                  </div>
-                </div>
-              )}
-            </div>
-          ) : (
-            <div className="flex items-center justify-center h-full bg-white rounded-lg border border-gray-200">
-              <div className="text-center">
-                <div className="text-gray-400 text-lg mb-2">
-                  No email selected
-                </div>
-                <div className="text-gray-500 text-sm">
-                  Choose an email template from the left panel to preview
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
+      </ResizablePanel>
+    </ResizablePanelGroup>
   );
 };
 
