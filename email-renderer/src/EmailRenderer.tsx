@@ -205,7 +205,7 @@ const EmailRenderer: React.FC = () => {
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col">
-        {/* Top Bar */}
+        {/* Top Bar - Moved outside of the conditional rendering */}
         <div className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
           <div>
             <h1 className="text-xl font-semibold text-gray-800">
@@ -269,9 +269,9 @@ const EmailRenderer: React.FC = () => {
         <div className="flex-1 p-6 overflow-auto">
           {selectedEmailId ? (
             <div className="h-full flex flex-col">
-              {/* Preview Tab */}
+              {/* Preview Tab - Fixed overflow */}
               {activeTab === "preview" && (
-                <div className="flex-1 bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                <div className="flex-1 bg-white rounded-lg shadow-sm border border-gray-200 overflow-auto">
                   <EmailPreviewIframe
                     key={`${selectedEmailId}-${currentLanguage}`}
                     html={renderedEmail.html}

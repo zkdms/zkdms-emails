@@ -23,7 +23,7 @@ interface UseEmailComponentsReturn {
 
 // Email module paths - centralized configuration
 const EMAIL_MODULES = [
-  "./emails/test",
+  "./emails/welcome",
   "./emails/test2",
   // Add more email paths here
 ] as const;

@@ -7,7 +7,7 @@ interface EmailPreviewIFrameProps {
 
 export const EmailPreviewIframe: React.FC<EmailPreviewIFrameProps> = ({
   html,
-  className = "w-full h-full border-0 overflow-scroll",
+  className = "w-full h-full border-0",
 }) => {
   return (
     <div
