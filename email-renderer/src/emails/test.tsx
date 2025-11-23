@@ -13,7 +13,7 @@ const ZkdmsWelcome = () => {
   const firstSteps = [
     {
       number: 1,
-      title: "Set up your check-in schedule",
+      title: "Set up your check-in schedules",
       description:
         "Configure your regular check-in intervals to keep your account active and secure.",
       icon: "📅",
